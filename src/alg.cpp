@@ -1,69 +1,84 @@
 // Copyright 2021 NNTU-CS
 #include <string>
 #include "tstack.h"
-
-std::string infx2pstfx(std::string inf) {
-  // добавьте сюда нужный код
-  return std::string("");
-  std::stack<char> stack;
-    std::string str;
-    for (int i = 0; i < inf.length(); i++) {
-        if ((inf[i] >= '0') && (inf[i] <= '9')) {
-            str = str + inf[i];
-            str = str + " ";
-        } else if ((stack.empty()) || (inf[i] == '(')
-                 || (priorit(inf[i] > priorit(stack.top())))) {
-            stack.push(inf[i]);
-        } else if (inf[i] == ')') {
-            while (stack.top() != '(') {
-                str = str + stack.top();
-                str = str + ' ';
-                stack.pop();
-            }
-            stack.pop();
-        } else {
-            while (!stack.empty() && (priorit(stack.top()) >= priorit(inf[i]))) {
-                str = str + stack.top();
-                str = str + ' ';
-                stack.pop();
-            }
-            stack.push(inf[i]);
-        }
+int priority(char symbol){
+  switch(symbol){
+int priority(char symbol) {
+  switch (symbol) {
+    case '(':
+      return 0;
+      break;
+@@ -29,37 +29,34 @@ std::string infx2pstfx(std::string inf) {
+  std::string NewStr;
+  std::string NewStrPr;
+  TStack <char> StackOfNumbers;
+  for(int i = 0;i<inf.lenght();i++){
+    if(priority(inf[i]) == -1){
+  for (int i = 0; i < inf.length(); i++) {
+    if (priority(inf[i]) == -1){
+      NewStr += inf[i] + " ";                
     }
-     if (!stack.empty()) {
-         while (!stack.empty()) {
-            str = str + stack.top();
-            str = str + ' ';
-            stack.pop();
-         }
-     }
-    str.pop_back();
-    return str;
-}
-
-int eval(std::string pst) {
-  // добавьте сюда нужный код
-  return 0;
-  std::stack<char> stack;
-  int resultat;
-  for (int i = 0; i < pst.length(); i++) {
-    if ((pst[i] >= '0') && (pst[i] <= '9')) {
-      stack.push(pst[i] - '0');
-    } else if (pst[i] != ' ') {
-      int y2 = stack.top();
-      stack.pop();
-      int y1 = stack.top();
-      stack.pop();
-      if (pst[i] == '+')
-        stack.push(y1 + y2);
-      if (pst[i] == '-')
-        stack.push(y1 - y2);
-      if (pst[i] == '*')
-        stack.push(y1 * y2);
-      if (pst[i] == '/')
-        stack.push(y1 / y2);
+    else if(priority(inf[i]) == 0){
+    } else if (priority(inf[i]) == 0) {    
+      StackOfNumbers.push(inf[i]);        
+    }
+    else if(priority(inf[i]) == 1){
+      while(StackOfNumbers.get() != '(')  {
+    } else if (priority(inf[i]) == 1) {
+      while (StackOfNumbers.get() != '(') {
+        NewStr += StackOfNumbers.get() + " ";  
+        StackOfNumbers.pop();       
+      } 
+      StackOfNumbers.pop();          
+    }
+    else{
+      while(!StackOfNumbers.isEmpty() && priority(StackOfNumbers.get()) >= priority(inf[i])){
+    } else {
+      while (!StackOfNumbers.isEmpty() && priority(StackOfNumbers.get()) >= priority(inf[i])){
+          str += StackOfNumbers.get() + " ";
+          StackOfNumbers.pop();
+      }
+      StackOfNumbers.push();            
+      StackOfNumbers.push(inf[i]);            
     }
   }
-  resultat = stack.top();
-  return resultat;
+  while(!StackOfNumbers.isEmpty()){
+  while (!StackOfNumbers.isEmpty()){
+   NewStr += StackOfNumbers.get(); 
+   StackOfNumbers.pop();   
+  }
+  NewStrPr = NewStr.substring(0,NewStr.lenght() - 1);
+  NewStrPr = NewStr.substr(0, NewStr.lenght()-1);
+  return NewStrPr;
+}
+int calculation(int first,int second,char symbol){
+  switch(symbol){
+int calculation (int first,int second,char symbol) {
+  switch (symbol) {
+    case '+':
+      return first + second;
+      break;
+@@ -76,12 +73,11 @@ int calculation(int first,int second,char symbol){
+}
+int eval(std::string pst) {
+  TStack <char> StackOfNumbers;  
+  for(int i = 0;i<pst.lenght();i++){
+  for (int i = 0;i<pst.length();i++){
+    int charpr = priority(pst[i]);
+    if(pst[i] <= '9' && pst[i] >= '0'){
+    if (pst[i] <= '9' && pst[i] >= '0'){
+      StackOfNumbers.push(pst[i] - '0'); 
+    }
+    else if (pst[i] != ' ') {
+    } else if (pst[i] != ' ') {
+      int first = StackOfNumbers.get();
+      StackOfNumbers.pop();
+      int second = StackOfNumbers.get();
+      StackOfNumbers.pop();
+      int result = calculation(first,second,pst[i]);
+      StackOfNumbers.push(result);                 
+    }   
+  }
+  int result = StackOfNumbers.get();
+  return result;  
 }
